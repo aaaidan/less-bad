@@ -1,0 +1,15 @@
+.keyboard {
+    
+}
+
+.line {
+
+}
+
+.line-1 { margin-left:0 }
+.line-2 { margin-left:0 }
+.line-3 { margin-left:0 }
+
+.key {
+    display: inline-block;
+}
