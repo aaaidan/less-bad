@@ -1,20 +1,62 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 html, body {
     height:100%;
     margin:0;
     background:#333;
+    
 }
 
 body {
     display: flex;
-    font-family: sans-serif;  
+    flex-direction: column;
+    font-family: sans-serif;
+}
+
+.text-input {
+    margin: auto;
+    margin-bottom:0;
+    width: 490px; /* magic: width of keyboard */
+    height: 200px;
+    padding: 20px;
+    border-radius: 5px 5px 0 0;
+    background: white;
+    white-space: pre-wrap;
+}
+
+.text-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: dodgerblue;
+    vertical-align: bottom;
+    animation: blink 0.6s infinite alternate;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    40% {
+        opacity: 1;
+    }
+    60% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 .keyboard {
     margin: auto;
+    margin-top:0;
     padding: 20px;
     position: relative;
-    background: white;
-    border-radius: 5px;
+    background: #ddd;
+    border-radius: 0 0 5px 5px;
 }
 
 .line {

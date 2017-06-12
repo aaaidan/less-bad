@@ -5,12 +5,16 @@ const TWO_PI = Math.PI * 2;
 const cursor = document.querySelector(".cursor");
 const cursorDebug = document.querySelector(".cursor-debug");
 const textDebug = document.querySelector(".text-debug");
+const textInput = document.querySelector(".text-input");
 const keyboard = document.querySelector(".keyboard");
 const lines = document.querySelectorAll(".line");
 
 // keystate
 var keyState = [];
-window.onkeyup = function(e) { keyState[e.keyCode]=false;}
+window.onkeyup = function(e) { 
+    keyState[e.keyCode]=false;
+    customKeyUp(e.keyCode);
+}
 window.onkeydown = function(e) {
     if (!keyState[e.keyCode]) {
         keyState[e.keyCode] = true;
@@ -22,7 +26,8 @@ const KeyCodes = {
     LEFT: 37,
     RIGHT: 39,
     UP: 38,
-    DOWN: 40
+    DOWN: 40,
+    "R_CTRL": 17
 };
 
 
@@ -32,10 +37,10 @@ var currentKey = 0;
 
 var keyWidth = 44;
 
-const BASE_CURSOR_SPEED = 50;
-const CURSOR_SPEED_BONUS_RATE = 800;
-const MAX_CURSOR_SPEED_BONUS = 400;
-const CURSOR_SETTLE_WEIGHT = 0.2;
+const BASE_CURSOR_SPEED = 0;
+const CURSOR_SPEED_BONUS_RATE = 1000;
+const MAX_CURSOR_SPEED_BONUS = 500;
+const CURSOR_SETTLE_WEIGHT = 0.3;
 
 var cursorX = keyWidth / 2 + getCurrentLineElement().offsetLeft;
 var cursorXView = cursorX;
@@ -57,11 +62,22 @@ function setCurrentKeyElement(newKeyElement) {
     // currentKeyElement.classList.add("hovered");
 }
 
-function calcHoveredKeyIndex() {
+function getHoveredKeyIndex() {
     const line = getCurrentLineElement();
-    var keyIndex = Math.min( line.children.length - 1, Math.floor( (cursorX - line.offsetLeft) / keyWidth ));
+    const keyIndex = Math.min( line.children.length - 1, Math.floor( (cursorX - line.offsetLeft) / keyWidth ));
+    return keyIndex;
+}
 
-    var key = line.querySelectorAll(".key")[keyIndex];
+function getKeyElementByIndex(keyIndex) {
+    const line = getCurrentLineElement();
+    const key = line.querySelectorAll(".key")[keyIndex];
+    return key;
+}
+
+function calcHoveredKeyIndex() {
+    const keyIndex = getHoveredKeyIndex();
+    const key = getKeyElementByIndex(keyIndex);
+
     setCurrentKeyElement(key);
 
     return keyIndex;
@@ -78,7 +94,31 @@ function constrainCursorX(x) {
     return Math.max( x, currentLineOffset );
 }
 
-customKeyPress = function(keyCode) { 
+var enterTimer = null;
+
+var entryText = "";
+
+function appendToString(string) {
+    if (string == "⏎") {
+        entryText += "\n";
+    } else {
+        entryText += string;
+    }
+
+    textInput.textContent = entryText;
+    var textCursor = document.createElement("span");
+    textCursor.classList.add("text-cursor");
+
+    textInput.appendChild(textCursor); // this gets clobbered next time.
+}
+appendToString('');
+
+function replaceLastCharWithSpace() {
+    entryText = entryText.substr(0, entryText.length - 1 ) + " ";
+    textInput.textContent = entryText;
+}
+
+const customKeyPress = function(keyCode) { 
     if (keyCode == KeyCodes.DOWN) {
         currentLine = (currentLine + 1) % lines.length;
     } else if (keyCode == KeyCodes.UP) {
@@ -87,8 +127,24 @@ customKeyPress = function(keyCode) {
         cursorX = constrainCursorX( cursorX - keyWidth );
     } else if (keyCode == KeyCodes.RIGHT) {
         cursorX = constrainCursorX( cursorX + keyWidth )
+    } else if (keyCode == KeyCodes.R_CTRL) {
+        const keyIndex = getHoveredKeyIndex();
+        const key = getKeyElementByIndex(keyIndex);
+        
+        appendToString(key.textContent.trim());
+
+        enterTimer = setTimeout(replaceLastCharWithSpace, 500);
+
+    } else {
+        console.log(keyCode);
     }
 };
+
+const customKeyUp = function(keyCode) {
+    if (keyCode == KeyCodes.R_CTRL) {
+        clearTimeout(enterTimer);
+    }
+}
 
 function draw(delta) {
 
