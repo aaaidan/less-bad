@@ -101,6 +101,8 @@ var entryText = "";
 function appendToString(string) {
     if (string == "⏎") {
         entryText += "\n";
+    } else if (string == "⌫") {
+        entryText = entryText.slice(0, entryText.length - 1);
     } else {
         entryText += string;
     }
