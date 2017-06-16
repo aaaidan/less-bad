@@ -18,7 +18,7 @@ body {
 .text-input {
     margin: auto;
     margin-bottom:0;
-    width: 490px; /* magic: width of keyboard */
+    width: 530px; /* magic: width of keyboard */
     height: 200px;
     padding: 20px;
     border-radius: 5px 5px 0 0;
@@ -53,6 +53,7 @@ body {
 .keyboard {
     margin: auto;
     margin-top:0;
+    width: 530px;
     padding: 20px;
     position: relative;
     background: #ddd;
